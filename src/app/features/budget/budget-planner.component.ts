@@ -108,7 +108,7 @@ const SERVICES_DATA: Service[] = [
     <!-- Trigger Button -->
     <button class="budget-trigger" (click)="open()">
       <span>🧮</span>
-      <span>حاسب ميزانيتك بالـ AI</span>
+      <span>احسب ميزانيتك بالـ AI</span>
       <span class="trigger-badge">جديد ✨</span>
     </button>
 
@@ -122,7 +122,7 @@ const SERVICES_DATA: Service[] = [
             <div class="modal-title-wrap">
               <span class="modal-emoji">🧮</span>
               <div>
-                <h2 class="modal-title">حاسب ميزانية فرحك</h2>
+                <h2 class="modal-title">احسب ميزانية فرحك</h2>
                 <p class="modal-sub">الـ AI هيوزع ميزانيتك على الخدمات المناسبة</p>
               </div>
             </div>
