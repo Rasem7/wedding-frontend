@@ -337,7 +337,7 @@ export class ClientsListComponent implements OnInit {
       budgetCategory: this.activeBudget || undefined,
     }).subscribe({
       next: res => {
-        this.clients.set(res.items);
+        this.clients.set(res.data);
         this.totalPages = res.totalPages;
         this.loading.set(false);
       },

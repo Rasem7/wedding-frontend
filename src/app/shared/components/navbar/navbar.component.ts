@@ -28,7 +28,7 @@ import { AuthService } from '../../../core/services/auth.service';
 
       <div class="nav-actions">
         @if (auth.isLoggedIn()) {
-          <span class="user-name">{{ auth.currentUser()?.name }}</span>
+          <span class="user-name">{{ auth.currentUser()?.username }}</span>
           <button class="nav-btn-outline" (click)="auth.logout()">خروج</button>
         } @else {
           <button class="nav-btn" routerLink="/booking">+ حجز جديد</button>

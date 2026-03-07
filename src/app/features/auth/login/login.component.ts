@@ -20,10 +20,10 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
 
         <form [formGroup]="form" (ngSubmit)="submit()">
           <div class="form-group">
-            <label>البريد الإلكتروني</label>
-            <input type="email" formControlName="email" placeholder="admin@example.com">
-            @if (form.get('email')?.invalid && form.get('email')?.touched) {
-              <span class="error">البريد الإلكتروني مطلوب</span>
+            <label>اسم المستخدم</label>
+            <input type="text" formControlName="username" placeholder="admin">
+            @if (form.get('username')?.invalid && form.get('username')?.touched) {
+              <span class="error">اسم المستخدم مطلوب</span>
             }
           </div>
 
@@ -39,11 +39,23 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
             }
           </div>
 
+          <div class="remember-row">
+            <label class="remember-label">
+              <input type="checkbox" formControlName="rememberMe">
+              <span>تذكرني لمدة ٣٠ يوم</span>
+            </label>
+          </div>
+
           <button type="submit" class="btn-login" [disabled]="loading">
             @if (loading) { <span>جاري الدخول...</span> }
             @else { <span>دخول ←</span> }
           </button>
         </form>
+
+        <div class="hint-box">
+          <span>🔑</span>
+          <span>اسم المستخدم: <strong>admin</strong> — كلمة المرور: <strong>Admin@123</strong></span>
+        </div>
 
         <p class="back-link">
           <a routerLink="/">← العودة للرئيسية</a>
@@ -78,7 +90,7 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
       margin-bottom: 1.2rem; position: relative;
     }
     label { font-size: 0.85rem; font-weight: 600; color: var(--text); }
-    input {
+    input[type="text"], input[type="password"] {
       padding: 0.8rem 1rem;
       border: 1.5px solid rgba(201,168,76,0.25);
       border-radius: 10px; background: var(--cream);
@@ -92,6 +104,12 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
       background: none; border: none; cursor: pointer; font-size: 1rem;
     }
     .error { font-size: 0.8rem; color: #C5373A; }
+    .remember-row { margin-bottom: 1.2rem; }
+    .remember-label {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.85rem; color: var(--text-light); cursor: pointer; font-weight: 400;
+    }
+    .remember-label input { width: auto; accent-color: var(--gold); }
     .btn-login {
       width: 100%; padding: 0.9rem;
       background: var(--gold); color: var(--white);
@@ -100,31 +118,42 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
       font-size: 1rem; font-weight: 700; cursor: pointer;
       transition: all 0.2s; margin-top: 0.5rem;
     }
-    .btn-login:hover:not(:disabled) { background: var(--gold-dark); }
+    .btn-login:hover:not(:disabled) { background: var(--dark); }
     .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
-    .back-link { text-align: center; margin-top: 1.5rem; }
+    .hint-box {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2);
+      border-radius: 10px; padding: 0.75rem 1rem;
+      font-size: 0.82rem; color: var(--text-light); margin-top: 1rem;
+    }
+    .back-link { text-align: center; margin-top: 1rem; }
     .back-link a { color: var(--gold-dark); font-size: 0.9rem; text-decoration: none; }
   `]
 })
 export class LoginComponent {
-  private fb     = inject(FormBuilder);
-  private auth   = inject(AuthService);
+  private fb    = inject(FormBuilder);
+  private auth  = inject(AuthService);
   private router = inject(Router);
-  private toast  = inject(ToastService);
+  private toast = inject(ToastService);
 
   loading  = false;
   showPass = false;
 
   form = this.fb.group({
-    email:    ['', [Validators.required, Validators.email]],
-    password: ['', Validators.required],
+    username:   ['', Validators.required],
+    password:   ['', Validators.required],
+    rememberMe: [false],
   });
 
   submit() {
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
     this.loading = true;
 
-    this.auth.login(this.form.value as any).subscribe({
+    this.auth.login({
+      username: this.form.value.username!,
+      password: this.form.value.password!,
+      rememberMe: this.form.value.rememberMe ?? false,
+    }).subscribe({
       next: () => {
         this.toast.success('أهلاً! تم تسجيل الدخول بنجاح');
         this.router.navigate(['/dashboard']);

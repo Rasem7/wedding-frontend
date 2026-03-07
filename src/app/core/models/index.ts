@@ -64,8 +64,8 @@ export interface BookingService {
   price: number;
 }
 
-// ===== VENDOR =====
-export interface Vendor {
+// ===== SERVICE PROVIDER =====
+export interface ServiceProvider {
   id: number;
   name: string;
   category: string;
@@ -137,19 +137,18 @@ export interface LoginDto {
 
 export interface AuthResponse {
   token: string;
-  refreshToken: string;
   expiresAt: string;
-  user: {
-    id: number;
-    email: string;
-    name: string;
+  username: string;
+  role: string;
+  user?: {
+    username: string;
     role: string;
   };
 }
 
 // ===== PAGINATION =====
 export interface PagedResult<T> {
-  items: T[];
+  data: T[];
   totalCount: number;
   page: number;
   pageSize: number;
@@ -163,4 +162,17 @@ export interface QueryParams {
   sortBy?: string;
   sortDesc?: boolean;
   [key: string]: any;
+}
+
+export interface Vendor {
+  id: number;
+  name: string;
+  category: string;
+  location: string;
+  rating: number;
+  reviewCount: number;
+  priceFrom: number;
+  description?: string;
+  phone?: string;
+  isActive: boolean;
 }
