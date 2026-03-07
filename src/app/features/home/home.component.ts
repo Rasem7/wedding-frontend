@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { BudgetPlannerComponent } from '../budget/budget-planner.component';
 
 const SERVICES = [
   { icon: '🏛️', name: 'قاعات الأفراح', desc: 'أجمل القاعات والفيلات لاستيعاب ضيوفك', count: '٤٨ قاعة' },
@@ -15,7 +16,7 @@ const SERVICES = [
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, BudgetPlannerComponent],
   template: `
     <!-- HERO -->
     <section class="hero">
@@ -30,6 +31,7 @@ const SERVICES = [
       <div class="hero-actions">
         <button class="btn-primary" routerLink="/vendors">تصفح مقدمو الخدمات</button>
         <button class="btn-outline" routerLink="/booking">احجز دلوقتي</button>
+        <app-budget-planner></app-budget-planner>
       </div>
 
       <div class="hero-stats">
