@@ -1,8 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ToastService } from '../../../shared/components/toast/toast.service';
+import { ClientService, BookingService } from '../../../core/services/api.service';
 
 const SERVICES = [
   { id: 1, icon: '🏛️', name: 'قاعات الأفراح' },
@@ -63,6 +64,10 @@ const SERVICES = [
                 <input [(ngModel)]="form.email" type="email" placeholder="example@mail.com">
               </div>
               <div class="form-group full">
+                <label>الميزانية التقريبية (جنيه)</label>
+                <input [(ngModel)]="form.budget" type="number" placeholder="مثال: 80000">
+              </div>
+              <div class="form-group full">
                 <label>العنوان</label>
                 <input [(ngModel)]="form.address" placeholder="المنطقة / المدينة">
               </div>
@@ -119,8 +124,7 @@ const SERVICES = [
             <div class="services-check-grid">
               @for (s of allServices; track s.id) {
                 <label class="service-check" [class.checked]="isSelected(s.id)">
-                  <input type="checkbox" [checked]="isSelected(s.id)"
-                         (change)="toggleService(s.id)">
+                  <input type="checkbox" [checked]="isSelected(s.id)" (change)="toggleService(s.id)">
                   <span>{{ s.icon }}</span>
                   <span>{{ s.name }}</span>
                 </label>
@@ -139,10 +143,12 @@ const SERVICES = [
             <div class="summary">
               <div class="summary-row"><span>العريس</span><span>{{ form.groomName || '—' }}</span></div>
               <div class="summary-row"><span>العروسة</span><span>{{ form.brideName || '—' }}</span></div>
+              <div class="summary-row"><span>الموبايل</span><span>{{ form.groomPhone || '—' }}</span></div>
               <div class="summary-row"><span>تاريخ الفرح</span><span>{{ form.weddingDate || '—' }}</span></div>
               <div class="summary-row"><span>عدد الضيوف</span><span>{{ form.guestCount || '—' }}</span></div>
               <div class="summary-row"><span>نوع الحفل</span><span>{{ eventTypeLabel() }}</span></div>
               <div class="summary-row"><span>المكان</span><span>{{ form.venue || '—' }}</span></div>
+              <div class="summary-row"><span>الميزانية</span><span>{{ form.budget | number }} ج</span></div>
               <div class="summary-row"><span>الخدمات</span><span>{{ selectedServicesLabels() }}</span></div>
             </div>
             <div class="btn-row">
@@ -166,14 +172,11 @@ const SERVICES = [
     }
     .section-title { font-family: 'Amiri', serif; font-size: 2rem; color: #1A1208; }
     .section-title em { color: #C9A84C; font-style: italic; }
-
     .booking-form {
       background: #FFFDF8; border: 1px solid rgba(201,168,76,0.2);
       border-radius: 24px; padding: 2.5rem;
       box-shadow: 0 10px 40px rgba(26,18,8,0.1);
     }
-
-    /* Steps Bar */
     .steps-bar { display: flex; margin-bottom: 2.5rem; border-radius: 12px; overflow: hidden; border: 1px solid rgba(201,168,76,0.2); }
     .step-tab {
       flex: 1; padding: 0.75rem 0.5rem; text-align: center;
@@ -190,8 +193,6 @@ const SERVICES = [
       align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700;
     }
     .step-label { font-size: 0.78rem; font-weight: 600; }
-
-    /* Form */
     .step-content { animation: fadeIn 0.3s ease; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem; }
@@ -206,35 +207,27 @@ const SERVICES = [
     }
     input:focus, select:focus, textarea:focus { border-color: #C9A84C; background: white; }
     textarea { min-height: 90px; resize: vertical; }
-
-    /* Services */
     .step-hint { color: #7A6040; font-size: 0.9rem; margin-bottom: 1rem; }
     .services-check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-bottom: 1.5rem; }
     .service-check {
       display: flex; align-items: center; gap: 0.6rem;
       padding: 0.75rem; background: #FAF5EE; border-radius: 10px;
-      cursor: pointer; border: 1.5px solid transparent; transition: all 0.2s;
-      font-size: 0.9rem;
+      cursor: pointer; border: 1.5px solid transparent; transition: all 0.2s; font-size: 0.9rem;
     }
     .service-check:hover { border-color: rgba(201,168,76,0.3); }
     .service-check.checked { border-color: #C9A84C; background: rgba(201,168,76,0.08); }
     .service-check input { width: auto; accent-color: #C9A84C; }
-
-    /* Summary */
     .summary {
       background: #FAF5EE; border: 1px solid rgba(201,168,76,0.2);
       border-radius: 12px; padding: 1.2rem; margin-bottom: 1.5rem;
     }
     .summary-row {
       display: flex; justify-content: space-between;
-      padding: 0.5rem 0; border-bottom: 1px solid rgba(201,168,76,0.1);
-      font-size: 0.9rem;
+      padding: 0.5rem 0; border-bottom: 1px solid rgba(201,168,76,0.1); font-size: 0.9rem;
     }
     .summary-row:last-child { border-bottom: none; }
     .summary-row span:first-child { color: #7A6040; }
     .summary-row span:last-child { font-weight: 600; color: #1A1208; }
-
-    /* Buttons */
     .btn-next, .btn-confirm {
       width: 100%; padding: 0.88rem; background: #C9A84C; color: white;
       border: none; border-radius: 12px; font-family: 'Tajawal', sans-serif;
@@ -251,7 +244,6 @@ const SERVICES = [
     .btn-row { display: flex; gap: 1rem; }
     .btn-row .btn-back { flex: 1; }
     .btn-row .btn-next, .btn-row .btn-confirm { flex: 2; }
-
     @media (max-width: 600px) {
       .form-grid { grid-template-columns: 1fr; }
       .services-check-grid { grid-template-columns: 1fr; }
@@ -260,8 +252,13 @@ const SERVICES = [
   `]
 })
 export class BookingWizardComponent {
+  private clientSvc  = inject(ClientService);
+  private bookingSvc = inject(BookingService);
+  private router     = inject(Router);
+  private toast      = inject(ToastService);
+
   currentStep = 1;
-  submitting = signal(false);
+  submitting  = signal(false);
   allServices = SERVICES;
   selectedServiceIds: number[] = [];
 
@@ -274,12 +271,11 @@ export class BookingWizardComponent {
 
   form = {
     groomName: '', brideName: '', groomPhone: '', bridePhone: '',
-    email: '', address: '', weddingDate: '', weddingTime: '',
-    guestCount: null as number | null, eventType: 'FullWedding',
-    venue: '', notes: '',
+    email: '', address: '', budget: 0,
+    weddingDate: '', weddingTime: '',
+    guestCount: null as number | null,
+    eventType: 'FullWedding', venue: '', notes: '',
   };
-
-  constructor(private router: Router, private toast: ToastService) {}
 
   goTo(step: number) { this.currentStep = step; }
 
@@ -306,12 +302,45 @@ export class BookingWizardComponent {
 
   submit() {
     this.submitting.set(true);
-    // هنا هيتربط بالـ API لما يجهز Backend
-    setTimeout(() => {
-      this.toast.success('✅ تم تسجيل الحجز بنجاح! هنتواصل معاك قريباً');
-      this.submitting.set(false);
-      this.router.navigate(['/']);
-    }, 1500);
+
+    // Step 1: Create Client
+    this.clientSvc.create({
+      groomName:  this.form.groomName,
+      brideName:  this.form.brideName,
+      groomPhone: this.form.groomPhone,
+      bridePhone: this.form.bridePhone,
+      email:      this.form.email,
+      address:    this.form.address,
+      budget:     this.form.budget,
+    }).subscribe({
+      next: (client) => {
+        // Step 2: Create Booking
+        this.bookingSvc.create({
+          clientId:    client.id,
+          weddingDate: new Date(this.form.weddingDate).toISOString(),
+          weddingTime: this.form.weddingTime,
+          venue:       this.form.venue,
+          guestCount:  this.form.guestCount ?? 0,
+          eventType:   this.form.eventType,
+          totalAmount: this.form.budget,
+          notes:       this.form.notes,
+        }).subscribe({
+          next: () => {
+            this.toast.success('✅ تم تسجيل الحجز بنجاح! هنتواصل معاك قريباً');
+            this.submitting.set(false);
+            this.router.navigate(['/dashboard']);
+          },
+          error: () => {
+            this.toast.error('حصل خطأ في إنشاء الحجز');
+            this.submitting.set(false);
+          }
+        });
+      },
+      error: () => {
+        this.toast.error('حصل خطأ في تسجيل البيانات');
+        this.submitting.set(false);
+      }
+    });
   }
 
   eventTypeLabel() {
