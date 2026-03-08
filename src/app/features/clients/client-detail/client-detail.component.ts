@@ -143,7 +143,7 @@ export class ClientDetailComponent implements OnInit {
       error: () => this.loading.set(false),
     });
     this.bookingSvc.getAll({ clientId: id }).subscribe({
-      next: res => this.bookings.set(res.items),
+      next: res => this.bookings.set(res.data),
     });
   }
 
