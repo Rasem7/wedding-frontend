@@ -73,22 +73,6 @@ export class BookingService {
   }
 }
 
-// ===== VENDORS SERVICE =====
-@Injectable({ providedIn: 'root' })
-export class VendorService {
-  constructor(private http: HttpClient) {}
-
-  getAll(category?: string): Observable<Vendor[]> {
-    let p = new HttpParams();
-    if (category && category !== 'الكل') p = p.set('category', category);
-    return this.http.get<Vendor[]>(`${API}/vendors`, { params: p });
-  }
-
-  getById(id: number): Observable<Vendor> {
-    return this.http.get<Vendor>(`${API}/vendors/${id}`);
-  }
-}
-
 // ===== PAYMENTS SERVICE =====
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
@@ -110,5 +94,33 @@ export class DashboardService {
 
   getStats(): Observable<DashboardStats> {
     return this.http.get<DashboardStats>(`${API}/dashboard/stats`);
+  }
+}
+
+// ===== VENDORS SERVICE =====
+@Injectable({ providedIn: 'root' })
+export class VendorService {
+  constructor(private http: HttpClient) {}
+
+  getAll(category?: string): Observable<Vendor[]> {
+    let p = new HttpParams();
+    if (category && category !== 'الكل') p = p.set('category', category);
+    return this.http.get<Vendor[]>(`${API}/vendors`, { params: p });
+  }
+
+  getById(id: number): Observable<Vendor> {
+    return this.http.get<Vendor>(`${API}/vendors/${id}`);
+  }
+
+  create(vendor: Partial<Vendor>): Observable<Vendor> {
+    return this.http.post<Vendor>(`${API}/vendors`, vendor);
+  }
+
+  update(id: number, vendor: Partial<Vendor>): Observable<Vendor> {
+    return this.http.put<Vendor>(`${API}/vendors/${id}`, vendor);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${API}/vendors/${id}`);
   }
 }
