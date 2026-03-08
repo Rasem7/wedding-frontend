@@ -1,18 +1,33 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { VendorService } from '../../../core/services/api.service';
+import { Vendor } from '../../../core/models';
 
-const MOCK_VENDORS = [
-  { id:1, name:'بالاس ويدينج هول', category:'قاعات الأفراح', location:'مدينة نصر، القاهرة', rating:4.9, reviewCount:234, priceFrom:'من ٣٠,٠٠٠ جنيه', emoji:'🏛️', badge:'مميز', color:'#FFF5E6' },
-  { id:2, name:'ستوديو ليلى فوتو', category:'التصوير', location:'المعادي، القاهرة', rating:4.8, reviewCount:189, priceFrom:'من ٨,٠٠٠ جنيه', emoji:'📸', badge:'', color:'#F0F5FF' },
-  { id:3, name:'فلاورز باي نور', category:'تنسيق الزهور', location:'الزمالك، القاهرة', rating:4.7, reviewCount:156, priceFrom:'من ٥,٠٠٠ جنيه', emoji:'🌸', badge:'جديد', color:'#FFF0F5' },
-  { id:4, name:'لافوشيه كيترينج', category:'كيترينج', location:'التجمع الخامس', rating:4.6, reviewCount:312, priceFrom:'من ١٢٠ جنيه/شخص', emoji:'🍽️', badge:'', color:'#F5F5F0' },
-  { id:5, name:'جلوري برايدال', category:'فساتين الزفاف', location:'المهندسين، القاهرة', rating:4.9, reviewCount:421, priceFrom:'من ٥,٠٠٠ جنيه', emoji:'👗', badge:'الأكثر طلباً', color:'#F8F0FF' },
-  { id:6, name:'موسيقار بند', category:'الموسيقى', location:'وسط البلد، القاهرة', rating:4.7, reviewCount:98, priceFrom:'من ٨,٠٠٠ جنيه', emoji:'🎵', badge:'', color:'#F0FFF5' },
-];
+const CATEGORY_ICONS: Record<string, string> = {
+  'قاعات الأفراح': '🏛️',
+  'التصوير والفيديو': '📸',
+  'تنسيق الزهور': '🌸',
+  'الكيترينج': '🍽️',
+  'كوافير ومكياج': '💄',
+  'الموسيقى': '🎵',
+  'فساتين الزفاف': '👗',
+  'الحلويات': '🎂',
+};
 
-const CATEGORIES = ['الكل', 'قاعات الأفراح', 'التصوير', 'تنسيق الزهور', 'كيترينج', 'فساتين الزفاف', 'الموسيقى'];
+const CATEGORY_COLORS: Record<string, string> = {
+  'قاعات الأفراح': '#FFF5E6',
+  'التصوير والفيديو': '#F0F5FF',
+  'تنسيق الزهور': '#FFF0F5',
+  'الكيترينج': '#F5F5F0',
+  'كوافير ومكياج': '#FFF0FF',
+  'الموسيقى': '#F0FFF5',
+  'فساتين الزفاف': '#F8F0FF',
+  'الحلويات': '#FFF8F0',
+};
+
+const CATEGORIES = ['الكل', 'قاعات الأفراح', 'التصوير والفيديو', 'تنسيق الزهور', 'الكيترينج', 'كوافير ومكياج', 'فساتين الزفاف', 'الموسيقى'];
 
 @Component({
   selector: 'app-vendors-list',
@@ -21,51 +36,67 @@ const CATEGORIES = ['الكل', 'قاعات الأفراح', 'التصوير', '
   template: `
     <section class="vendors-section">
       <div class="section-header">
-        <div class="section-tag">مقدمو الخدمات</div>
+        <div class="section-tag">مزودو الخدمة</div>
         <h2 class="section-title">اختار <em>الأفضل</em> لفرحك</h2>
       </div>
 
       <div class="search-bar">
         <span>🔍</span>
-        <input [(ngModel)]="searchQuery" (ngModelChange)="filter()" placeholder="ابحث عن مزود خدمة...">
+        <input [(ngModel)]="searchQuery" (ngModelChange)="filter()"
+               placeholder="ابحث عن مزود خدمة...">
       </div>
 
       <div class="filters">
         @for (cat of categories; track cat) {
-          <button class="filter-btn" [class.active]="activeCategory === cat" (click)="setCategory(cat)">
-            {{ cat }}
-          </button>
+          <button class="filter-btn" [class.active]="activeCategory === cat"
+                  (click)="setCategory(cat)">{{ cat }}</button>
         }
       </div>
 
-      <div class="vendors-grid">
-        @for (v of filtered(); track v.id) {
-          <div class="vendor-card" [routerLink]="['/vendors', v.id]">
-            <div class="vendor-img" [style.background]="v.color">
-              <span>{{ v.emoji }}</span>
-              @if (v.badge) { <span class="vendor-badge">{{ v.badge }}</span> }
+      @if (loading()) {
+        <div class="vendors-grid">
+          @for (i of [1,2,3,4,5,6]; track i) {
+            <div class="vendor-skeleton"></div>
+          }
+        </div>
+      } @else if (filtered().length === 0) {
+        <div class="empty">
+          <div class="empty-icon">🏪</div>
+          <p>لا يوجد مزودو خدمة في هذه الفئة</p>
+        </div>
+      } @else {
+        <div class="vendors-grid">
+          @for (v of filtered(); track v.id) {
+            <div class="vendor-card" [routerLink]="['/vendors', v.id]">
+              <div class="vendor-img" [style.background]="categoryColor(v.category)">
+                <span>{{ categoryIcon(v.category) }}</span>
+                @if (v.rating >= 4.8) {
+                  <span class="vendor-badge">مميز ⭐</span>
+                }
+              </div>
+              <div class="vendor-body">
+                <div class="vendor-cat">{{ v.category }}</div>
+                <div class="vendor-name">{{ v.name }}</div>
+                <div class="vendor-location">📍 {{ v.location }}</div>
+                <div class="vendor-rating">
+                  <span class="stars">★★★★★</span>
+                  <strong>{{ v.rating }}</strong>
+                  <span class="review-count">({{ v.reviewCount }} تقييم)</span>
+                </div>
+                <div class="vendor-price">
+                  <span class="price-label">يبدأ من</span>
+                  <span class="price-value">{{ v.priceFrom | number }} ج</span>
+                </div>
+                <div class="vendor-actions">
+                  <button class="btn-book" (click)="$event.stopPropagation()"
+                          routerLink="/booking">احجز</button>
+                  <button class="btn-detail">التفاصيل</button>
+                </div>
+              </div>
             </div>
-            <div class="vendor-body">
-              <div class="vendor-cat">{{ v.category }}</div>
-              <div class="vendor-name">{{ v.name }}</div>
-              <div class="vendor-location">📍 {{ v.location }}</div>
-              <div class="vendor-rating">
-                <span class="stars">★★★★★</span>
-                <strong>{{ v.rating }}</strong>
-                <span class="review-count">({{ v.reviewCount }} تقييم)</span>
-              </div>
-              <div class="vendor-price">
-                <span class="price-label">يبدأ من</span>
-                <span class="price-value">{{ v.priceFrom }}</span>
-              </div>
-              <div class="vendor-actions">
-                <button class="btn-book" (click)="$event.stopPropagation()" routerLink="/booking">احجز</button>
-                <button class="btn-detail">التفاصيل</button>
-              </div>
-            </div>
-          </div>
-        }
-      </div>
+          }
+        </div>
+      }
     </section>
   `,
   styles: [`
@@ -78,7 +109,6 @@ const CATEGORIES = ['الكل', 'قاعات الأفراح', 'التصوير', '
     }
     .section-title { font-family: 'Amiri', serif; font-size: 2.2rem; color: #1A1208; }
     .section-title em { color: #C9A84C; font-style: italic; }
-
     .search-bar {
       display: flex; align-items: center; gap: 0.7rem;
       max-width: 500px; margin: 0 auto 1.5rem;
@@ -96,8 +126,15 @@ const CATEGORIES = ['الكل', 'قاعات الأفراح', 'التصوير', '
       color: #7A6040; font-family: 'Tajawal', sans-serif; font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
     }
     .filter-btn.active, .filter-btn:hover { background: #C9A84C; color: white; border-color: #C9A84C; }
-
     .vendors-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.5rem; }
+    .vendor-skeleton {
+      height: 380px; border-radius: 18px;
+      background: linear-gradient(90deg, #f0e8d8 25%, #faf5ee 50%, #f0e8d8 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .empty { text-align: center; padding: 4rem; color: #7A6040; }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
     .vendor-card {
       background: #FFFDF8; border: 1px solid rgba(201,168,76,0.12);
       border-radius: 18px; overflow: hidden; cursor: pointer; transition: all 0.3s;
@@ -139,21 +176,43 @@ const CATEGORIES = ['الكل', 'قاعات الأفراح', 'التصوير', '
   `]
 })
 export class VendorsListComponent implements OnInit {
-  categories = CATEGORIES;
-  activeCategory = 'الكل';
-  searchQuery = '';
-  filtered = signal(MOCK_VENDORS);
+  private vendorSvc = inject(VendorService);
 
-  ngOnInit() { this.filter(); }
+  allVendors    = signal<Vendor[]>([]);
+  filtered      = signal<Vendor[]>([]);
+  loading       = signal(true);
+  categories    = CATEGORIES;
+  activeCategory = 'الكل';
+  searchQuery   = '';
+
+  ngOnInit() { this.load(); }
+
+  load() {
+    this.loading.set(true);
+    this.vendorSvc.getAll().subscribe({
+      next: vendors => {
+        this.allVendors.set(vendors);
+        this.filter();
+        this.loading.set(false);
+      },
+      error: () => {
+        // لو الـ API مش شغال — عرض رسالة فارغة
+        this.loading.set(false);
+      }
+    });
+  }
 
   setCategory(cat: string) { this.activeCategory = cat; this.filter(); }
 
   filter() {
-    this.filtered.set(MOCK_VENDORS.filter(v => {
+    this.filtered.set(this.allVendors().filter(v => {
       const matchCat = this.activeCategory === 'الكل' || v.category === this.activeCategory;
       const q = this.searchQuery.toLowerCase();
-      const matchQ = !q || v.name.includes(q) || v.location.includes(q) || v.category.includes(q);
+      const matchQ = !q || v.name.toLowerCase().includes(q) || v.location.toLowerCase().includes(q) || v.category.includes(q);
       return matchCat && matchQ;
     }));
   }
+
+  categoryIcon(cat: string) { return CATEGORY_ICONS[cat] ?? '🏪'; }
+  categoryColor(cat: string) { return CATEGORY_COLORS[cat] ?? '#FAF5EE'; }
 }
