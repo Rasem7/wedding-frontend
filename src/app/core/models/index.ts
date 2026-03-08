@@ -48,12 +48,12 @@ export type EventType = 'FullWedding' | 'Cocktail' | 'Engagement' | 'SmallParty'
 export interface CreateBookingDto {
   clientId: number;
   weddingDate: string;
-  weddingTime: string;
-  venue: string;
+  weddingTime?: string;
+  venue?: string;
   guestCount: number;
-  eventType: string;
+  eventType: string;  
+  totalAmount: number;
   notes?: string;
-  serviceIds?: number[];
 }
 
 export interface BookingService {
