@@ -51,7 +51,7 @@ export interface CreateBookingDto {
   weddingTime: string;
   venue: string;
   guestCount: number;
-  eventType: EventType;
+  eventType: string;
   notes?: string;
   serviceIds?: number[];
 }
