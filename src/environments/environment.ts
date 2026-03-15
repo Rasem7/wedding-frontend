@@ -4,5 +4,5 @@
 // };
 export const environment = {
   production: false,
-  apiUrl: 'http://3awez-atgawez-api.runasp.net/api'
+  apiUrl: 'https://3awez-atgawez-api.runasp.net/api'
 };
