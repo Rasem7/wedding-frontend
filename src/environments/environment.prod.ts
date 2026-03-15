@@ -6,7 +6,12 @@
 //   production: true,
 //   apiUrl: 'http://weddingapi.somee.com/api'
 // };
+// export const environment = {
+//   production: true,
+//   apiUrl: 'https://3awez-atgawez-api.runasp.net/api'
+// };
+
 export const environment = {
   production: true,
-  apiUrl: 'https://3awez-atgawez-api.runasp.net/api'
+  apiUrl: 'https://tweedier-congregationally-craig.ngrok-free.dev/api'
 };
