@@ -101,26 +101,49 @@ export class DashboardService {
 @Injectable({ providedIn: 'root' })
 export class VendorService {
   constructor(private http: HttpClient) {}
-
   getAll(category?: string): Observable<Vendor[]> {
-    let p = new HttpParams();
-    if (category && category !== 'الكل') p = p.set('category', category);
-    return this.http.get<Vendor[]>(`${API}/vendors`, { params: p });
-  }
-
-  getById(id: number): Observable<Vendor> {
-    return this.http.get<Vendor>(`${API}/vendors/${id}`);
-  }
-
-  create(vendor: Partial<Vendor>): Observable<Vendor> {
-    return this.http.post<Vendor>(`${API}/vendors`, vendor);
-  }
-
-  update(id: number, vendor: Partial<Vendor>): Observable<Vendor> {
-    return this.http.put<Vendor>(`${API}/vendors/${id}`, vendor);
-  }
-
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${API}/vendors/${id}`);
-  }
+  let p = new HttpParams();
+  if (category && category !== 'الكل') p = p.set('category', category);
+  return this.http.get<Vendor[]>(`${API}/serviceprovider`, { params: p });
 }
+
+getById(id: number): Observable<Vendor> {
+  return this.http.get<Vendor>(`${API}/serviceprovider/${id}`);
+}
+
+create(vendor: Partial<Vendor>): Observable<Vendor> {
+  return this.http.post<Vendor>(`${API}/serviceprovider`, vendor);
+}
+
+update(id: number, vendor: Partial<Vendor>): Observable<Vendor> {
+  return this.http.put<Vendor>(`${API}/serviceprovider/${id}`, vendor);
+}
+
+delete(id: number): Observable<void> {
+  return this.http.delete<void>(`${API}/serviceprovider/${id}`);
+}
+}
+
+//   getAll(category?: string): Observable<Vendor[]> {
+//     let p = new HttpParams();
+//     if (category && category !== 'الكل') p = p.set('category', category);
+//     return this.http.get<Vendor[]>(`${API}/vendors`, { params: p });
+//   }
+
+//   getById(id: number): Observable<Vendor> {
+//     return this.http.get<Vendor>(`${API}/vendors/${id}`);
+//   }
+
+//   create(vendor: Partial<Vendor>): Observable<Vendor> {
+//     return this.http.post<Vendor>(`${API}/vendors`, vendor);
+//   }
+
+//   update(id: number, vendor: Partial<Vendor>): Observable<Vendor> {
+//     return this.http.put<Vendor>(`${API}/vendors/${id}`, vendor);
+//   }
+
+//   delete(id: number): Observable<void> {
+//     return this.http.delete<void>(`${API}/vendors/${id}`);
+//   }
+// }
+
