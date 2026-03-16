@@ -11,7 +11,11 @@
 //   apiUrl: 'https://3awez-atgawez-api.runasp.net/api'
 // };
 
+// export const environment = {
+//   production: true,
+//   apiUrl: 'https://tweedier-congregationally-craig.ngrok-free.dev/api'
+// };
 export const environment = {
   production: true,
-  apiUrl: 'https://tweedier-congregationally-craig.ngrok-free.dev/api'
+  apiUrl: 'https://localhost:44371/api'
 };
