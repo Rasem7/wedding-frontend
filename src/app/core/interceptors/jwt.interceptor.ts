@@ -9,9 +9,12 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const token  = auth.getToken();
 
-  const authReq = token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
-    : req;
+  const authReq = req.clone({
+    setHeaders: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      'ngrok-skip-browser-warning': 'true'
+    }
+  });
 
   return next(authReq).pipe(
     catchError((err: HttpErrorResponse) => {
