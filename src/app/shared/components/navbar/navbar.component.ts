@@ -16,13 +16,14 @@ import { AuthService } from '../../../core/services/auth.service';
 
       <ul class="nav-links">
         <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">الرئيسية</a></li>
-        <li><a routerLink="/vendors" routerLinkActive="active">مقدمو الخدمات</a></li>
+        <li><a routerLink="/vendors" routerLinkActive="active">مزودو الخدمة</a></li>
         <li><a routerLink="/booking" routerLinkActive="active">حجز</a></li>
 
         @if (auth.isLoggedIn()) {
-          <li><a routerLink="/calendar"   routerLinkActive="active">التقويم</a></li>
-          <li><a routerLink="/clients"    routerLinkActive="active">العملاء</a></li>
-          <li><a routerLink="/dashboard"  routerLinkActive="active">لوحة التحكم</a></li>
+          <li><a routerLink="/calendar"      routerLinkActive="active">التقويم</a></li>
+          <li><a routerLink="/clients"       routerLinkActive="active">العملاء</a></li>
+          <li><a routerLink="/dashboard"     routerLinkActive="active">لوحة التحكم</a></li>
+          <li><a routerLink="/vendors-admin" routerLinkActive="active">إدارة الخدمات</a></li>
         }
       </ul>
 

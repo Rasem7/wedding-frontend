@@ -52,6 +52,15 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/calendar/calendar.component').then(m => m.CalendarComponent),
   },
+  
+  {
+  path: 'vendors-admin',
+  canActivate: [authGuard],
+  loadComponent: () => import('./features/vendors/vendors-admin/vendors-admin.component')
+    .then(m => m.VendorsAdminComponent)
+  },
+  
+  // ---- Fallback Route ----
   {
     path: '**',
     redirectTo: '',
