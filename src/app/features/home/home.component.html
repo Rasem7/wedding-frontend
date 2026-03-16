@@ -1,0 +1,39 @@
+HERO
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-ornament"></div>
+  <div class="hero-ornament"></div>
+
+  <div class="hero-badge">✨ منصة حفلات الزفاف الأولى في مصر </div>
+  <h1>كل تفصيلة في<em>حفل أحلامك</em></h1>
+  <p class="hero-sub">من القاعة إلى الكوافير — نوفرلك كل اللي تحتاجه لفرحك في مكان واحد</p>
+
+  <div class="hero-actions">
+    <button class="btn-primary" routerLink="/vendors">تصفح مقدمو الخدمات</button>
+    <button class="btn-outline" routerLink="/booking">احجز دلوقتي  </button>
+    <app-budget-planner></app-budget-planner>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item"><span class="stat-num">٢٤٠+</span><span class="stat-label">مزود خدمة</span></div>
+    <div class="stat-item"><span class="stat-num">١٨٠٠+</span><span class="stat-label">حفل ناجح</span></div>
+    <div class="stat-item"><span class="stat-num">٩٨٪</span><span class="stat-label"> رضا العملاء</span></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services-section">
+  <div class="section-header">
+    <div class="section-tag">خدماتنا</div>
+    <h2 class="section-title">كل اللي فرحك <em>محتاجه</em></h2>
+    <p class="section-sub">اختار من بين تشكيلة واسعة من الخدمات المتكاملة</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card" *ngFor="let s of services" routerLink="/vendors">
+      <div class="service-icon">{{ s.icon }}</div>
+      <h3>{{ s.name }}</h3>
+      <p>{{ s.desc }}</p>
+      <span class="service-count">{{ s.count }}</span>
+    </div>
+  </div>
+</section>
