@@ -1,0 +1,140 @@
+<section class="booking-section">
+      <div class="section-header">
+        <div class="section-tag">حجز جديد</div>
+        <h2 class="section-title">سجّل <em>فرحك</em></h2>
+      </div>
+
+      <div class="booking-form">
+        <!-- Steps Bar -->
+        <div class="steps-bar">
+          @for (s of steps; track s.num) {
+            <div class="step-tab" [class.active]="currentStep === s.num" [class.done]="currentStep > s.num"
+                 (click)="currentStep > s.num && goTo(s.num)">
+              <span class="step-circle">{{ currentStep > s.num ? '✓' : s.num }}</span>
+              <span class="step-label">{{ s.label }}</span>
+            </div>
+          }
+        </div>
+
+        <!-- Step 1: بيانات العريسين -->
+        @if (currentStep === 1) {
+          <div class="step-content">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>اسم العريس *</label>
+                <input [(ngModel)]="form.groomName" placeholder="الاسم الكامل">
+              </div>
+              <div class="form-group">
+                <label>اسم العروسة *</label>
+                <input [(ngModel)]="form.brideName" placeholder="الاسم الكامل">
+              </div>
+              <div class="form-group">
+                <label>موبايل العريس *</label>
+                <input [(ngModel)]="form.groomPhone" type="tel" placeholder="01xxxxxxxxx">
+              </div>
+              <div class="form-group">
+                <label>موبايل العروسة</label>
+                <input [(ngModel)]="form.bridePhone" type="tel" placeholder="01xxxxxxxxx">
+              </div>
+              <div class="form-group full">
+                <label>البريد الإلكتروني</label>
+                <input [(ngModel)]="form.email" type="email" placeholder="example@mail.com">
+              </div>
+              <div class="form-group full">
+                <label>الميزانية التقريبية (جنيه)</label>
+                <input [(ngModel)]="form.budget" type="number" placeholder="مثال: 80000">
+              </div>
+              <div class="form-group full">
+                <label>العنوان</label>
+                <input [(ngModel)]="form.address" placeholder="المنطقة / المدينة">
+              </div>
+            </div>
+            <button class="btn-next" (click)="next()">التالي ←</button>
+          </div>
+        }
+
+        <!-- Step 2: تفاصيل الحفل -->
+        @if (currentStep === 2) {
+          <div class="step-content">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>تاريخ الفرح *</label>
+                <input [(ngModel)]="form.weddingDate" type="date">
+              </div>
+              <div class="form-group">
+                <label>وقت الحفل</label>
+                <input [(ngModel)]="form.weddingTime" type="time">
+              </div>
+              <div class="form-group">
+                <label>عدد المدعوين</label>
+                <input [(ngModel)]="form.guestCount" type="number" placeholder="عدد الضيوف">
+              </div>
+              <div class="form-group">
+                <label>نوع الحفل</label>
+                <select [(ngModel)]="form.eventType">
+                  <option value="FullWedding">حفل زفاف كامل</option>
+                  <option value="Cocktail">كوكتيل</option>
+                  <option value="Engagement">حفل خطوبة</option>
+                  <option value="SmallParty">سهرة صغيرة</option>
+                </select>
+              </div>
+              <div class="form-group full">
+                <label>القاعة / المكان</label>
+                <input [(ngModel)]="form.venue" placeholder="اسم المكان أو المنطقة">
+              </div>
+              <div class="form-group full">
+                <label>ملاحظات إضافية</label>
+                <textarea [(ngModel)]="form.notes" placeholder="أي تفاصيل تانية..."></textarea>
+              </div>
+            </div>
+            <div class="btn-row">
+              <button class="btn-back" (click)="goTo(1)">→ رجوع</button>
+              <button class="btn-next" (click)="next()">التالي ←</button>
+            </div>
+          </div>
+        }
+
+        <!-- Step 3: الخدمات -->
+        @if (currentStep === 3) {
+          <div class="step-content">
+            <p class="step-hint">اختار الخدمات اللي محتاجها:</p>
+            <div class="services-check-grid">
+              @for (s of allServices; track s.id) {
+                <label class="service-check" [class.checked]="isSelected(s.id)">
+                  <input type="checkbox" [checked]="isSelected(s.id)" (change)="toggleService(s.id)">
+                  <span>{{ s.icon }}</span>
+                  <span>{{ s.name }}</span>
+                </label>
+              }
+            </div>
+            <div class="btn-row">
+              <button class="btn-back" (click)="goTo(2)">→ رجوع</button>
+              <button class="btn-next" (click)="next()">التالي ←</button>
+            </div>
+          </div>
+        }
+
+        <!-- Step 4: تأكيد -->
+        @if (currentStep === 4) {
+          <div class="step-content">
+            <div class="summary">
+              <div class="summary-row"><span>العريس</span><span>{{ form.groomName || '—' }}</span></div>
+              <div class="summary-row"><span>العروسة</span><span>{{ form.brideName || '—' }}</span></div>
+              <div class="summary-row"><span>الموبايل</span><span>{{ form.groomPhone || '—' }}</span></div>
+              <div class="summary-row"><span>تاريخ الفرح</span><span>{{ form.weddingDate || '—' }}</span></div>
+              <div class="summary-row"><span>عدد الضيوف</span><span>{{ form.guestCount || '—' }}</span></div>
+              <div class="summary-row"><span>نوع الحفل</span><span>{{ eventTypeLabel() }}</span></div>
+              <div class="summary-row"><span>المكان</span><span>{{ form.venue || '—' }}</span></div>
+              <div class="summary-row"><span>الميزانية</span><span>{{ form.budget | number }} ج</span></div>
+              <div class="summary-row"><span>الخدمات</span><span>{{ selectedServicesLabels() }}</span></div>
+            </div>
+            <div class="btn-row">
+              <button class="btn-back" (click)="goTo(3)">→ رجوع</button>
+              <button class="btn-confirm" (click)="submit()" [disabled]="submitting()">
+                {{ submitting() ? 'جاري الإرسال...' : '✓ تأكيد الحجز' }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </section>

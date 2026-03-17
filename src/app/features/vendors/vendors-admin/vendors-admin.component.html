@@ -1,0 +1,87 @@
+<div class="admin-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">إدارة مزودو الخدمة</h1>
+      <p class="page-sub">{{ filtered().length }} مزود خدمة</p>
+    </div>
+    <button class="btn-add" (click)="openModal()">
+      <span>+</span> إضافة مزود خدمة
+    </button>
+  </div>
+
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" [(ngModel)]="searchQ" (ngModelChange)="applyFilters()"
+             placeholder="ابحث بالاسم أو الموقع...">
+    </div>
+
+    <select class="filter-select" [(ngModel)]="filterCategory" (ngModelChange)="applyFilters()">
+      @for (c of categories; track c) {
+        <option [value]="c">{{ c }}</option>
+      }
+    </select>
+
+    <select class="filter-select" [(ngModel)]="filterRating" (ngModelChange)="applyFilters()">
+      <option value="">كل التقييمات</option>
+      <option value="4.5">4.5+ ⭐</option>
+      <option value="4">4+ ⭐</option>
+      <option value="3">3+ ⭐</option>
+    </select>
+
+    <select class="filter-select" [(ngModel)]="sortBy" (ngModelChange)="applyFilters()">
+      <option value="rating">ترتيب بالتقييم</option>
+      <option value="price_asc">السعر: الأقل</option>
+      <option value="price_desc">السعر: الأعلى</option>
+      <option value="reviews">عدد التقييمات</option>
+      <option value="name">الاسم</option>
+    </select>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="skeleton-row"></div>
+      }
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th><th>الاسم</th><th>الفئة</th><th>الموقع</th>
+            <th>التقييم</th><th>السعر من</th><th>التقييمات</th><th>الحالة</th><th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (v of filtered(); track v.id) {
+            <tr class="table-row">
+              <td>{{ v.id }}</td>
+              <td>{{ v.name }}</td>
+              <td>{{ v.category }}</td>
+              <td>📍 {{ v.location }}</td>
+              <td>{{ v.rating }}</td>
+              <td>{{ v.priceFrom | number }} ج</td>
+              <td>{{ v.reviewCount }}</td>
+              <td>{{ v.isActive ? 'نشط' : 'غير نشط' }}</td>
+              <td>
+                <button (click)="openModal(v)">✏️</button>
+                <button (click)="confirmDelete(v)">🗑️</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (showModal()) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h2>{{ editMode ? 'تعديل' : 'إضافة' }}</h2>
+        <input [(ngModel)]="form.name" placeholder="الاسم">
+        <button (click)="save()">حفظ</button>
+      </div>
+    </div>
+  }
+</div>
