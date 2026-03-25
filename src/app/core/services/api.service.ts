@@ -50,26 +50,60 @@ export class ClientService {
 export class BookingService {
   constructor(private http: HttpClient) {}
 
-  getAll(params?: QueryParams): Observable<PagedResult<Booking>> {
+  // ✅ GetAll (Paged + Filters)
+  getAll(params?: QueryParams): Observable<Booking[]> {
     let p = new HttpParams();
-    if (params) Object.entries(params).forEach(([k, v]) => { if (v != null) p = p.set(k, v); });
-    return this.http.get<PagedResult<Booking>>(`${API}/bookings`, { params: p });
+
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => {
+        if (v != null) p = p.set(k, v);
+      });
+    }
+
+    return this.http.get<Booking[]>(`${API}/Bookings/GetAll`, { params: p });
   }
 
-  getById(id: number): Observable<Booking> {
-    return this.http.get<Booking>(`${API}/bookings/${id}`);
+  // ✅ GetById
+  getById(id: number): Observable<any> {
+    return this.http.get<any>(`${API}/Bookings/GetById`, {
+      params: new HttpParams().set('id', id)
+    });
   }
 
+  // ✅ Create
   create(dto: CreateBookingDto): Observable<Booking> {
-    return this.http.post<Booking>(`${API}/bookings`, dto);
+    return this.http.post<Booking>(`${API}/Bookings/Create`, dto);
   }
 
-  updateStatus(id: number, status: string): Observable<Booking> {
-    return this.http.patch<Booking>(`${API}/bookings/${id}/status`, { status });
+  // ✅ Update Status (مهم 👇)
+  updateStatus(id: number, status: string): Observable<any> {
+    return this.http.post<any>(
+      `${API}/Bookings/UpdateStatus?id=${id}`,
+      status,
+      { headers: { 'Content-Type': 'application/json' } }
+    );
   }
 
-  getCalendarEvents(): Observable<any[]> {
-    return this.http.get<any[]>(`${API}/bookings/calendar`);
+  // ✅ Calendar
+  getCalendarEvents(year: number, month: number): Observable<any[]> {
+    return this.http.get<any[]>(`${API}/Bookings/GetCalendar`, {
+      params: new HttpParams()
+        .set('year', year)
+        .set('month', month)
+    });
+  }
+
+  // ✅ بدون pagination (لو محتاجاه)
+  getAllWithoutPaging(params?: QueryParams): Observable<Booking[]> {
+    let p = new HttpParams();
+
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => {
+        if (v != null) p = p.set(k, v);
+      });
+    }
+
+    return this.http.get<Booking[]>(`${API}/Bookings/GetAllWithoutPaging`, { params: p });
   }
 }
 
