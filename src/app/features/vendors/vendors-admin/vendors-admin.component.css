@@ -1,0 +1,52 @@
+.admin-page {
+  padding: 2rem;
+  direction: rtl;
+  font-family: 'Tajawal', sans-serif;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.btn-add {
+  background: #C9A84C;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.filters-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table td, .data-table th {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+}
+
+.modal {
+  background: white;
+  padding: 1rem;
+  margin: 5% auto;
+  width: 300px;
+}

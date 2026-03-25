@@ -1,0 +1,58 @@
+@if (vendor()) {
+  <div class="vendor-detail-header">
+    <button class="back-btn" routerLink="/vendors">← رجوع</button>
+    <span class="detail-emoji">{{ vendor()!.emoji }}</span>
+    <div class="detail-name">{{ vendor()!.name }}</div>
+    <div class="detail-cat">{{ vendor()!.category }} · {{ vendor()!.location }}</div>
+  </div>
+
+  <div class="detail-body">
+    <div class="detail-tabs">
+      @for (tab of tabs; track tab.key) {
+        <button class="tab-btn" [class.active]="activeTab === tab.key" (click)="activeTab = tab.key">
+          {{ tab.label }}
+        </button>
+      }
+    </div>
+
+    @if (activeTab === 'info') {
+      <p class="desc">{{ vendor()!.description }}</p>
+      <div class="info-grid">
+        <div class="info-item"><div class="info-label">التقييم</div><div class="info-val">⭐ {{ vendor()!.rating }} ({{ vendor()!.reviewCount }} تقييم)</div></div>
+        <div class="info-item"><div class="info-label">الطاقة</div><div class="info-val">{{ vendor()!.capacity }}</div></div>
+        <div class="info-item"><div class="info-label">التواصل</div><div class="info-val">{{ vendor()!.phone }}</div></div>
+        <div class="info-item"><div class="info-label">الموقع</div><div class="info-val">📍 {{ vendor()!.location }}</div></div>
+      </div>
+    }
+
+    @if (activeTab === 'packages') {
+      <div class="packages-list">
+        @for (p of vendor()!.packages; track p.name) {
+          <div class="package-card">
+            <div class="package-top">
+              <span class="package-name">{{ p.name }}</span>
+              <span class="package-price">{{ p.price }} ج</span>
+            </div>
+            <div class="package-details">{{ p.details }}</div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (activeTab === 'reviews') {
+      @for (r of vendor()!.reviews; track r.name) {
+        <div class="review-card">
+          <div class="review-top">
+            <span class="review-name">{{ r.name }}</span>
+            <span class="review-stars">{{ '★'.repeat(r.stars) }}</span>
+          </div>
+          <p class="review-text">{{ r.text }}</p>
+        </div>
+      }
+    }
+
+    <button class="btn-book-now" routerLink="/booking">احجز الآن</button>
+  </div>
+} @else {
+  <div class="not-found">مزود الخدمة مش موجود</div>
+}
