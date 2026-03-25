@@ -1,0 +1,85 @@
+<section class="vendors-section">
+  <div class="section-header">
+    <div class="section-tag">مزودو الخدمة </div>
+    <h2 class="section-title">اختار <em>الأفضل</em> لفرحك</h2>
+  </div>
+
+  <div class="search-bar">
+    <span>🔍</span>
+    <input [(ngModel)]="searchQuery" (ngModelChange)="filter()"
+           placeholder="ابحث عن مزود خدمة...">
+  </div>
+
+  <div class="filters">
+    @for (cat of categories; track cat) {
+      <button class="filter-btn"
+              [class.active]="activeCategory === cat"
+              (click)="setCategory(cat)">
+        {{ cat }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="vendors-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="vendor-skeleton"></div>
+      }
+    </div>
+  } @else if (filtered().length === 0) {
+    <div class="empty">
+      <div class="empty-icon">🏪</div>
+      <p>لا يوجد مزودو خدمة في هذه الفئة</p>
+    </div>
+  } @else {
+    <div class="vendors-grid">
+      @for (v of filtered(); track v.id) {
+        <div class="vendor-card" [routerLink]="['/vendors', v.id]">
+
+          <div class="vendor-img"
+               [style.background]="categoryColor(v.category)">
+            <span>{{ categoryIcon(v.category) }}</span>
+
+            @if (v.rating >= 4.8) {
+              <span class="vendor-badge">مميز ⭐</span>
+            }
+          </div>
+
+          <div class="vendor-body">
+            <div class="vendor-cat">{{ v.category }}</div>
+            <div class="vendor-name">{{ v.name }}</div>
+            <div class="vendor-location">📍 {{ v.location }}</div>
+
+            <div class="vendor-rating">
+              <span class="stars">★★★★★</span>
+              <strong>{{ v.rating }}</strong>
+              <span class="review-count">
+                ({{ v.reviewCount }} تقييم)
+              </span>
+            </div>
+
+            <div class="vendor-price">
+              <span class="price-label">يبدأ من</span>
+              <span class="price-value">
+                {{ v.priceFrom | number }} ج
+              </span>
+            </div>
+
+            <div class="vendor-actions">
+              <button class="btn-book"
+                      (click)="$event.stopPropagation()"
+                      routerLink="/booking">
+                احجز
+              </button>
+
+              <button class="btn-detail">
+                التفاصيل
+              </button>
+            </div>
+          </div>
+
+        </div>
+      }
+    </div>
+  }
+</section>
