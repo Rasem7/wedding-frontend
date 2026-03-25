@@ -45,6 +45,8 @@ export class ClientService {
   }
 }
 
+
+//#region BOOKINGS SERVICE
 // ===== BOOKINGS SERVICE =====
 @Injectable({ providedIn: 'root' })
 export class BookingService {
@@ -106,6 +108,8 @@ export class BookingService {
     return this.http.get<Booking[]>(`${API}/Bookings/GetAllWithoutPaging`, { params: p });
   }
 }
+//#endregion
+
 
 // ===== PAYMENTS SERVICE =====
 @Injectable({ providedIn: 'root' })
