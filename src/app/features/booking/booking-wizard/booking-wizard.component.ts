@@ -415,10 +415,29 @@ export class BookingWizardComponent {
         return;
       }
     }
-    if (this.currentStep === 2 && !this.form.weddingDate) {
-      this.toast.error('من فضلك حدد تاريخ الفرح');
-      return;
+    if (this.currentStep === 2) {
+    if (!this.form.weddingDate || !this.form.eventType || !this.form.guestCount) {
+        this.toast.error('من فضلك أكمل بيانات الفرح: التاريخ، عدد المدعوين، ونوع الحفل.');
+        return;
     }
+
+    const selectedDate = new Date(this.form.weddingDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+        this.toast.error('تاريخ الفرح لا يمكن أن يكون قبل اليوم');
+        return;
+    }
+
+    }
+   if (this.currentStep === 3) {
+    if (!this.selectedServiceIds || this.selectedServiceIds.length === 0) {
+        this.toast.error('من فضلك اختر خدمة واحدة على الأقل للاستمرار.');
+        return;
+    }
+
+}
     this.currentStep++;
   }
 
