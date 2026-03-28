@@ -1,0 +1,60 @@
+<section class="detail-section">
+  <div class="detail-header">
+    <button class="back-btn" routerLink="/clients">← رجوع للعملاء</button>
+
+    <ng-container *ngIf="loading(); else clientContent">
+      <div class="loading">جاري التحميل...</div>
+    </ng-container>
+
+    <ng-template #clientContent>
+      <div *ngIf="client()">
+        <div class="client-hero">
+          <div class="client-avatar-lg">{{ client()!.groomName[0] }}</div>
+          <div>
+            <h2>{{ client()!.groomName }} & {{ client()!.brideName }}</h2>
+            <p>{{ client()!.email }}</p>
+          </div>
+          <span class="budget-badge" [class]="client()!.budgetCategory.toLowerCase()">
+            {{ budgetLabel(client()!.budgetCategory) }}
+          </span>
+        </div>
+
+        <!-- Info Cards -->
+        <div class="info-grid">
+          <div class="info-card">
+            <div class="info-label">موبايل العريس</div>
+            <div class="info-val">{{ client()!.groomPhone }}</div>
+          </div>
+          <div class="info-card">
+            <div class="info-label">موبايل العروسة</div>
+            <div class="info-val">{{ client()!.bridePhone || '—' }}</div>
+          </div>
+          <div class="info-card">
+            <div class="info-label">الميزانية</div>
+            <div class="info-val gold">{{ client()!.budget | number }} جنيه</div>
+          </div>
+          <div class="info-card">
+            <div class="info-label">العنوان</div>
+            <div class="info-val">{{ client()!.address || '—' }}</div>
+          </div>
+        </div>
+
+        <!-- Bookings -->
+        <div class="bookings-section">
+          <h3>الحجوزات</h3>
+          <div *ngIf="bookings().length === 0" class="empty">لا يوجد حجوزات لهذا العميل</div>
+          <div *ngFor="let b of bookings(); trackBy: trackByBookingId" class="booking-row">
+            <div>
+              <div class="b-date">📅 {{ b.weddingDate | date:'dd/MM/yyyy' }}</div>
+              <div class="b-venue">📍 {{ b.venue }}</div>
+            </div>
+            <div>
+              <div class="b-guests">{{ b.guestCount }} ضيف</div>
+            </div>
+            <span class="status-badge" [class]="b.status.toLowerCase()">{{ statusLabel(b.status) }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</section>

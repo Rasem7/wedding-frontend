@@ -9,42 +9,68 @@ import { environment } from '../../../environments/environment';
 
 const API = environment.apiUrl;
 
+//#region  CLIENTS SERVICE
+
 // ===== CLIENTS SERVICE =====
+
 @Injectable({ providedIn: 'root' })
 export class ClientService {
   constructor(private http: HttpClient) {}
 
-  getAll(params?: QueryParams): Observable<PagedResult<Client>> {
+  // ✅ Get All (Pagination + Search)
+  getAll(params?: QueryParams): Observable<Client[]> {
     let p = new HttpParams();
+
     if (params) {
       Object.entries(params).forEach(([k, v]) => {
         if (v != null) p = p.set(k, v);
       });
     }
-    return this.http.get<PagedResult<Client>>(`${API}/clients`, { params: p });
+
+    return this.http.get<Client[]>(`${API}/Clients/GetAll`, { params: p });
   }
 
-  getById(id: number): Observable<Client> {
-    return this.http.get<Client>(`${API}/clients/${id}`);
+  // ✅ Get All بدون pagination
+  getAllWithoutPaging(): Observable<Client[]> {
+    return this.http.get<Client[]>(`${API}/Clients/GetAllWithoutPaging`);
   }
 
+  // ✅ Get By Id
+  getById(id: number): Observable<any> {
+    return this.http.get<any>(`${API}/Clients/GetById`, {
+      params: new HttpParams().set('id', id)
+    });
+  }
+
+  // ✅ Create
   create(dto: CreateClientDto): Observable<Client> {
-    return this.http.post<Client>(`${API}/clients`, dto);
+    return this.http.post<Client>(`${API}/Clients/Create`, dto);
   }
 
-  update(id: number, dto: Partial<CreateClientDto>): Observable<Client> {
-    return this.http.put<Client>(`${API}/clients/${id}`, dto);
+  // ✅ Update
+  update(id: number, dto: CreateClientDto): Observable<Client> {
+    return this.http.post<Client>(
+      `${API}/Clients/Update`,
+      dto,
+      {
+        params: new HttpParams().set('id', id)
+      }
+    );
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${API}/clients/${id}`);
-  }
-
-  getByBudget(category: string): Observable<Client[]> {
-    return this.http.get<Client[]>(`${API}/clients/by-budget/${category}`);
+  // ✅ Delete 
+  delete(id: number): Observable<any> {
+    return this.http.post<any>(
+      `${API}/Clients/Delete`,
+      null,
+      {
+        params: new HttpParams().set('id', id)
+      }
+    );
   }
 }
 
+//#endregion
 
 //#region BOOKINGS SERVICE
 // ===== BOOKINGS SERVICE =====

@@ -471,6 +471,7 @@ export class BookingWizardComponent {
           totalAmount: this.form.budget,
           notes:       this.form.notes,
         }).subscribe({
+          
           next: () => {
             this.toast.success('✅ تم تسجيل الحجز بنجاح! هنتواصل معاك قريباً');
             this.submitting.set(false);
@@ -480,7 +481,9 @@ export class BookingWizardComponent {
             this.toast.error('حصل خطأ في إنشاء الحجز');
             this.submitting.set(false);
           }
+          
         });
+        console.log()
       },
       error: () => {
         this.toast.error('حصل خطأ في تسجيل البيانات');
