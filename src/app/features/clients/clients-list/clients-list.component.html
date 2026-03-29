@@ -1,0 +1,126 @@
+<section class="clients-section">
+  <div class="section-header">
+    <div class="section-tag">العملاء</div>
+    <h2 class="section-title">قائمة <em>العرسان</em></h2>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="search-bar">
+      <span>🔍</span>
+      <input [(ngModel)]="searchQuery" (ngModelChange)="onSearch()" placeholder="ابحث باسم أو رقم...">
+    </div>
+
+    <div class="filter-group">
+      <button *ngFor="let cat of budgetCategories" class="filter-btn"
+              [class.active]="activeBudget === cat.value"
+              (click)="filterByBudget(cat.value)">
+        {{ cat.label }}
+      </button>
+    </div>
+
+    <button class="btn-primary" (click)="openModal()">+ عميل جديد</button>
+  </div>
+
+  <!-- Table -->
+  <div class="clients-table">
+    <div *ngIf="loading()">جاري التحميل...</div>
+    <div *ngIf="!loading() && clients().length === 0">لا يوجد عملاء</div>
+
+    <table *ngIf="!loading() && clients().length > 0">
+      <thead>
+        <tr>
+          <th>اسم العريسين</th>
+          <th>رقم التواصل</th>
+          <th>تاريخ الإضافة</th>
+          <th>الميزانية</th>
+          <th>التصنيف</th>
+          <th>إجراء</th>
+        </tr>
+      </thead>
+                 <tbody>
+               @for (c of clients(); track c.id) {
+                <tr>
+                   <td>
+                    <div class="client-name-cell">
+                       <div class="client-avatar">{{ c.groomName[0] }}</div>
+                       <div>
+                        <div class="name">{{ c.groomName }} & {{ c.brideName }}</div>
+                         <div class="email">{{ c.email }}</div>
+                       </div>
+                     </div>
+                   </td>
+                   <td>{{ c.groomPhone }}</td>
+                   <td>{{ c.createdAt | date:'dd/MM/yyyy' }}</td>
+                   <td class="budget-cell">{{ c.budget | number }} ج</td>
+                   <td>
+                     <span class="budget-badge" [class]="c.budgetCategory.toLowerCase()">
+                       {{ budgetLabel(c.budgetCategory) }}
+                    </span>
+                   </td>
+                 <td>
+    <div class="actions">
+      <button class="btn-sm-primary" [routerLink]="['/clients', c.id]">عرض</button>
+      <button class="btn-sm-primary" (click)="EditClient(c)">تعديل</button>
+      <button class="btn-sm-danger" (click)="deleteClient(c)">حذف</button>
+    </div>
+  </td>
+                 </tr>
+               }
+            </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="clients().length > 0">
+      <button [disabled]="currentPage === 1" (click)="goToPage(currentPage - 1)">‹</button>
+      <span>صفحة {{ currentPage }} من {{ totalPages }}</span>
+      <button [disabled]="currentPage === totalPages" (click)="goToPage(currentPage + 1)">›</button>
+    </div>
+  </div>
+</section>
+
+<!-- Modal: Add Client -->
+<div class="modal-overlay" *ngIf="showModal()" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>💍 عميل جديد</h3>
+      <button (click)="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>اسم العريس *</label>
+          <input [(ngModel)]="newClient.groomName" placeholder="الاسم الكامل">
+        </div>
+        <div class="form-group">
+          <label>اسم العروسة *</label>
+          <input [(ngModel)]="newClient.brideName" placeholder="الاسم الكامل">
+        </div>
+        <div class="form-group">
+          <label>موبايل العريس *</label>
+          <input [(ngModel)]="newClient.groomPhone" placeholder="01xxxxxxxxx">
+        </div>
+        <div class="form-group">
+          <label>موبايل العروسة</label>
+          <input [(ngModel)]="newClient.bridePhone" placeholder="01xxxxxxxxx">
+        </div>
+        <div class="form-group full">
+          <label>البريد الإلكتروني</label>
+          <input [(ngModel)]="newClient.email" placeholder="example@mail.com">
+        </div>
+        <div class="form-group full">
+          <label>الميزانية التقريبية (جنيه) *</label>
+          <input type="number" [(ngModel)]="newClient.budget" placeholder="مثال: 80000">
+        </div>
+        <div class="form-group full">
+          <label>العنوان</label>
+          <input [(ngModel)]="newClient.address" placeholder="المنطقة / المدينة">
+        </div>
+      </div>
+     <button class="btn-primary" style="width:100%;margin-top:1rem"
+        (click)="saveClient()" [disabled]="saving()">
+  {{ saving() ? 'جاري الحفظ...' : (editing() ? '💾 تعديل العميل' : '✓ حفظ العميل') }}
+</button>
+    </div>
+  </div>
+</div>
