@@ -186,6 +186,26 @@ delete(id: number): Observable<void> {
 }
 }
 
+// ===== MEDIA SERVICE =====
+@Injectable({ providedIn: 'root' })
+export class MediaService {
+  constructor(private http: HttpClient) {}
+
+  getMedia(serviceProviderId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${API}/media/${serviceProviderId}`);
+  }
+
+  upload(serviceProviderId: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<any>(`${API}/media/upload/${serviceProviderId}`, formData);
+  }
+
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${API}/media/${id}`);
+  }
+}
+
 //   getAll(category?: string): Observable<Vendor[]> {
 //     let p = new HttpParams();
 //     if (category && category !== 'الكل') p = p.set('category', category);

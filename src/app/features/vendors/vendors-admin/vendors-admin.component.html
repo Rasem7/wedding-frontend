@@ -1,4 +1,5 @@
 <div class="admin-page">
+  <!-- Header -->
   <div class="page-header">
     <div>
       <h1 class="page-title">إدارة مزودو الخدمة</h1>
@@ -9,6 +10,7 @@
     </button>
   </div>
 
+  <!-- Filters -->
   <div class="filters-bar">
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
@@ -38,6 +40,7 @@
     </select>
   </div>
 
+  <!-- Table -->
   @if (loading()) {
     <div class="loading">
       @for (i of [1,2,3,4,5]; track i) {
@@ -49,24 +52,60 @@
       <table class="data-table">
         <thead>
           <tr>
-            <th>#</th><th>الاسم</th><th>الفئة</th><th>الموقع</th>
-            <th>التقييم</th><th>السعر من</th><th>التقييمات</th><th>الحالة</th><th>إجراءات</th>
+            <th>#</th>
+            <th>الاسم</th>
+            <th>الفئة</th>
+            <th>الموقع</th>
+            <th>التقييم</th>
+            <th>السعر من</th>
+            <th>التقييمات</th>
+            <th>الحالة</th>
+            <th>إجراءات</th>
           </tr>
         </thead>
         <tbody>
           @for (v of filtered(); track v.id) {
             <tr class="table-row">
-              <td>{{ v.id }}</td>
-              <td>{{ v.name }}</td>
-              <td>{{ v.category }}</td>
-              <td>📍 {{ v.location }}</td>
-              <td>{{ v.rating }}</td>
-              <td>{{ v.priceFrom | number }} ج</td>
-              <td>{{ v.reviewCount }}</td>
-              <td>{{ v.isActive ? 'نشط' : 'غير نشط' }}</td>
+              <td class="td-id">{{ v.id }}</td>
               <td>
-                <button (click)="openModal(v)">✏️</button>
-                <button (click)="confirmDelete(v)">🗑️</button>
+                <div class="name-cell">
+                  <div class="name-avatar">{{ v.name[0] }}</div>
+                  <div>
+                    <div class="name-text">{{ v.name }}</div>
+                    <div class="phone-text">{{ v.phone }}</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="cat-badge">{{ v.category }}</span></td>
+              <td class="td-loc">📍 {{ v.location }}</td>
+              <td>
+                <div class="rating-cell">
+                  <span class="stars">★</span>
+                  <strong>{{ v.rating }}</strong>
+                </div>
+              </td>
+              <td class="td-price">{{ v.priceFrom | number }} ج</td>
+              <td class="td-reviews">{{ v.reviewCount }}</td>
+              <td>
+                <span class="status-badge" [class.active]="v.isActive" [class.inactive]="!v.isActive">
+                  {{ v.isActive ? 'نشط' : 'غير نشط' }}
+                </span>
+              </td>
+              <td>
+                <div class="actions-cell">
+                  <button class="btn-edit" (click)="openModal(v)" title="تعديل">✏️</button>
+                  <button class="btn-delete" (click)="confirmDelete(v)" title="حذف">🗑️</button>
+                </div>
+              </td>
+            </tr>
+          }
+          @if (filtered().length === 0) {
+            <tr>
+              <td colspan="9" class="empty-td">
+                <div class="empty">
+                  <div>🏪</div>
+                  <p>لا يوجد نتائج</p>
+                </div>
               </td>
             </tr>
           }
@@ -75,12 +114,93 @@
     </div>
   }
 
+  <!-- Add/Edit Modal -->
   @if (showModal()) {
     <div class="modal-overlay" (click)="closeModal()">
       <div class="modal" (click)="$event.stopPropagation()">
-        <h2>{{ editMode ? 'تعديل' : 'إضافة' }}</h2>
-        <input [(ngModel)]="form.name" placeholder="الاسم">
-        <button (click)="save()">حفظ</button>
+        <div class="modal-header">
+          <h2>{{ editMode ? 'تعديل مزود الخدمة' : 'إضافة مزود خدمة جديد' }}</h2>
+          <button class="modal-close" (click)="closeModal()">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>الاسم *</label>
+              <input [(ngModel)]="form.name" placeholder="اسم مزود الخدمة">
+            </div>
+            <div class="form-group">
+              <label>الفئة *</label>
+              <select [(ngModel)]="form.category">
+                @for (c of categories.slice(1); track c) {
+                  <option [value]="c">{{ c }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label>الموقع *</label>
+              <input [(ngModel)]="form.location" placeholder="المنطقة، المدينة">
+            </div>
+            <div class="form-group">
+              <label>رقم الهاتف</label>
+              <input [(ngModel)]="form.phone" placeholder="01xxxxxxxxx">
+            </div>
+            <div class="form-group">
+              <label>السعر يبدأ من (جنيه)</label>
+              <input type="number" [(ngModel)]="form.priceFrom" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label>التقييم (1-5)</label>
+              <input type="number" [(ngModel)]="form.rating" min="1" max="5" step="0.1" placeholder="4.5">
+            </div>
+            <div class="form-group">
+              <label>عدد التقييمات</label>
+              <input type="number" [(ngModel)]="form.reviewCount" placeholder="0">
+            </div>
+            <div class="form-group">
+              <label>الحالة</label>
+              <select [(ngModel)]="form.isActive">
+                <option [ngValue]="true">نشط</option>
+                <option [ngValue]="false">غير نشط</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label>الوصف</label>
+              <textarea [(ngModel)]="form.description" rows="3" placeholder="وصف مختصر عن مزود الخدمة"></textarea>
+            </div>
+          </div>
+
+          @if (errorMsg()) {
+            <div class="error-msg">⚠️ {{ errorMsg() }}</div>
+          }
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="closeModal()">إلغاء</button>
+          <button class="btn-save" (click)="save()" [disabled]="saving()">
+            {{ saving() ? 'جاري الحفظ...' : (editMode ? 'حفظ التعديلات' : 'إضافة') }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Delete Confirm Modal -->
+  @if (deleteTarget()) {
+    <div class="modal-overlay" (click)="deleteTarget.set(null)">
+      <div class="modal modal-sm" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>تأكيد الحذف</h2>
+          <button class="modal-close" (click)="deleteTarget.set(null)">✕</button>
+        </div>
+        <div class="modal-body">
+          <p class="confirm-text">هل أنت متأكد من حذف <strong>{{ deleteTarget()?.name }}</strong>؟</p>
+          <p class="confirm-sub">سيتم إيقاف تشغيله وليس حذفه نهائياً</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" (click)="deleteTarget.set(null)">إلغاء</button>
+          <button class="btn-delete-confirm" (click)="doDelete()" [disabled]="saving()">
+            {{ saving() ? 'جاري الحذف...' : 'نعم، احذف' }}
+          </button>
+        </div>
       </div>
     </div>
   }

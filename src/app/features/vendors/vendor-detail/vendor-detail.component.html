@@ -1,9 +1,19 @@
-@if (vendor()) {
+@if (loading()) {
+  <div class="loading-page">
+    <div class="spinner"></div>
+  </div>
+} @else if (vendor()) {
+
   <div class="vendor-detail-header">
     <button class="back-btn" routerLink="/vendors">← رجوع</button>
-    <span class="detail-emoji">{{ vendor()!.emoji }}</span>
+    <span class="detail-emoji">{{ categoryIcon(vendor()!.category) }}</span>
     <div class="detail-name">{{ vendor()!.name }}</div>
     <div class="detail-cat">{{ vendor()!.category }} · {{ vendor()!.location }}</div>
+    <div class="detail-rating">
+      <span class="stars">★★★★★</span>
+      <strong>{{ vendor()!.rating }}</strong>
+      <span>({{ vendor()!.reviewCount }} تقييم)</span>
+    </div>
   </div>
 
   <div class="detail-body">
@@ -11,48 +21,113 @@
       @for (tab of tabs; track tab.key) {
         <button class="tab-btn" [class.active]="activeTab === tab.key" (click)="activeTab = tab.key">
           {{ tab.label }}
+          @if (tab.key === 'media' && media().length > 0) {
+            <span class="media-count">{{ media().length }}</span>
+          }
         </button>
       }
     </div>
 
     @if (activeTab === 'info') {
-      <p class="desc">{{ vendor()!.description }}</p>
+      <p class="desc">{{ vendor()!.description || 'لا يوجد وصف متاح' }}</p>
       <div class="info-grid">
-        <div class="info-item"><div class="info-label">التقييم</div><div class="info-val">⭐ {{ vendor()!.rating }} ({{ vendor()!.reviewCount }} تقييم)</div></div>
-        <div class="info-item"><div class="info-label">الطاقة</div><div class="info-val">{{ vendor()!.capacity }}</div></div>
-        <div class="info-item"><div class="info-label">التواصل</div><div class="info-val">{{ vendor()!.phone }}</div></div>
-        <div class="info-item"><div class="info-label">الموقع</div><div class="info-val">📍 {{ vendor()!.location }}</div></div>
+        <div class="info-item">
+          <div class="info-label">التقييم</div>
+          <div class="info-val">⭐ {{ vendor()!.rating }} ({{ vendor()!.reviewCount }} تقييم)</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">السعر يبدأ من</div>
+          <div class="info-val">{{ vendor()!.priceFrom | number }} جنيه</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">التواصل</div>
+          <div class="info-val">{{ vendor()!.phone || '—' }}</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">الموقع</div>
+          <div class="info-val">📍 {{ vendor()!.location }}</div>
+        </div>
       </div>
+      <button class="btn-book-now" routerLink="/booking">احجز الآن 🎉</button>
     }
 
-    @if (activeTab === 'packages') {
-      <div class="packages-list">
-        @for (p of vendor()!.packages; track p.name) {
-          <div class="package-card">
-            <div class="package-top">
-              <span class="package-name">{{ p.name }}</span>
-              <span class="package-price">{{ p.price }} ج</span>
+    @if (activeTab === 'media') {
+      @if (media().length === 0) {
+        <div class="empty-media">
+          <div class="empty-icon">🖼️</div>
+          <p>لا يوجد صور أو فيديوهات بعد</p>
+        </div>
+      } @else {
+        @if (images().length > 0) {
+          <div class="media-section">
+            <h3 class="media-title">📸 الصور ({{ images().length }})</h3>
+            <div class="images-grid">
+              @for (img of images(); track img.id) {
+                <div class="img-item" (click)="openLightbox(img)">
+                  <img [src]="img.url" [alt]="vendor()!.name" loading="lazy">
+                  <div class="img-overlay">🔍</div>
+                </div>
+              }
             </div>
-            <div class="package-details">{{ p.details }}</div>
           </div>
         }
-      </div>
-    }
-
-    @if (activeTab === 'reviews') {
-      @for (r of vendor()!.reviews; track r.name) {
-        <div class="review-card">
-          <div class="review-top">
-            <span class="review-name">{{ r.name }}</span>
-            <span class="review-stars">{{ '★'.repeat(r.stars) }}</span>
+        @if (videos().length > 0) {
+          <div class="media-section">
+            <h3 class="media-title">🎥 الفيديوهات ({{ videos().length }})</h3>
+            <div class="videos-grid">
+              @for (vid of videos(); track vid.id) {
+                <div class="vid-item">
+                  <video [src]="vid.url" controls preload="metadata" class="video-player"></video>
+                </div>
+              }
+            </div>
           </div>
-          <p class="review-text">{{ r.text }}</p>
-        </div>
+        }
       }
+      <button class="btn-book-now" routerLink="/booking">احجز الآن 🎉</button>
     }
 
-    <button class="btn-book-now" routerLink="/booking">احجز الآن</button>
+    @if (activeTab === 'contact') {
+      <div class="contact-card">
+        <div class="contact-row">
+          <span class="contact-icon">📞</span>
+          <div>
+            <div class="contact-label">رقم الهاتف</div>
+            <div class="contact-val">{{ vendor()!.phone || 'غير متاح' }}</div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <span class="contact-icon">📍</span>
+          <div>
+            <div class="contact-label">الموقع</div>
+            <div class="contact-val">{{ vendor()!.location }}</div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <span class="contact-icon">🏷️</span>
+          <div>
+            <div class="contact-label">الفئة</div>
+            <div class="contact-val">{{ vendor()!.category }}</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-book-now" routerLink="/booking">احجز الآن 🎉</button>
+    }
   </div>
+
+  @if (lightbox()) {
+    <div class="lightbox-overlay" (click)="closeLightbox()">
+      <button class="lightbox-close" (click)="closeLightbox()">✕</button>
+      <div class="lightbox-content" (click)="$event.stopPropagation()">
+        <img [src]="lightbox()!.url" [alt]="vendor()!.name">
+      </div>
+    </div>
+  }
+
 } @else {
-  <div class="not-found">مزود الخدمة مش موجود</div>
+  <div class="not-found">
+    <div class="nf-icon">🏪</div>
+    <p>مزود الخدمة مش موجود</p>
+    <button class="back-btn-center" routerLink="/vendors">رجوع للقائمة</button>
+  </div>
 }
