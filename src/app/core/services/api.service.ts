@@ -48,15 +48,13 @@ export class ClientService {
   }
 
   // ✅ Update
-  update(id: number, dto: CreateClientDto): Observable<Client> {
-    return this.http.post<Client>(
-      `${API}/Clients/Update`,
-      dto,
-      {
-        params: new HttpParams().set('id', id)
-      }
-    );
-  }
+update(id: number, dto: CreateClientDto): Observable<Client> {
+  return this.http.post<Client>(
+    `${API}/Clients/Update`,
+    dto,
+    { params: new HttpParams().set('id', id) }
+  );
+}
 
   // ✅ Delete 
   delete(id: number): Observable<any> {
