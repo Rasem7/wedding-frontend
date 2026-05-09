@@ -41,7 +41,8 @@ import { AuthService } from '../../../core/services/auth.service';
   styles: [`
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-      background: rgba(250,245,238,0.97);
+      // background: rgba(250,245,238,0.97);
+      background-color: #fffeff;
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(201,168,76,0.2);
       padding: 0 2rem;
@@ -50,42 +51,66 @@ import { AuthService } from '../../../core/services/auth.service';
       box-shadow: 0 2px 30px rgba(26,18,8,0.1);
     }
     .nav-logo {
-      font-family: 'Amiri', serif;
+      // font-family: 'Amiri', serif;
+     font-family: 'Cairo', sans-serif;
+
       font-size: 1.4rem; font-weight: 700;
-      color: var(--gold-dark); cursor: pointer;
+      // color: var(--gold-dark);
+      color: #836787;
+       cursor: pointer;
       display: flex; align-items: center; gap: 0.5rem;
     }
     .nav-links {
       display: flex; gap: 0.2rem; list-style: none;
     }
     .nav-links a {
-      text-decoration: none; color: var(--text-light);
+      text-decoration: none; 
+      //color: var(--text-light);
+      color: #605562;
       font-size: 0.9rem; padding: 0.5rem 0.9rem;
       border-radius: 8px; transition: all 0.2s; font-weight: 500;
     }
     .nav-links a:hover, .nav-links a.active {
-      background: var(--gold); color: var(--white);
+      background-color: #735377;
+       color: var(--white);
     }
     .nav-actions { display: flex; gap: 0.5rem; align-items: center; }
     .user-name { font-size: 0.85rem; color: var(--text-light); }
     .nav-btn {
-      background: var(--gold); color: var(--white);
+      // background: var(--gold);
+      background-color: #735377;
+       color: var(--white);
       border: none; border-radius: 10px;
       padding: 0.55rem 1.2rem;
-      font-family: 'Tajawal', sans-serif;
+      // font-family: 'Tajawal', sans-serif;
+      font-family: Inter, sans-serif;
+
       font-size: 0.85rem; font-weight: 600; cursor: pointer;
       transition: all 0.2s;
     }
-    .nav-btn:hover { background: var(--gold-dark); }
+    .nav-btn:hover { 
+      // background: var(--gold-dark);
+      background-color: #735377;
+
+     }
     .nav-btn-outline {
-      background: transparent; color: var(--gold-dark);
-      border: 1.5px solid var(--gold); border-radius: 10px;
+      background: transparent; 
+      // color: var(--gold-dark);
+      color: #605562;
+
+     border: 1.5px solid #605562;
+      border-radius: 10px;
       padding: 0.5rem 1.1rem;
-      font-family: 'Tajawal', sans-serif;
+      // font-family: 'Tajawal', sans-serif;
+      font-family: Inter, sans-serif;
       font-size: 0.85rem; font-weight: 600; cursor: pointer;
       transition: all 0.2s;
     }
-    .nav-btn-outline:hover { background: var(--gold); color: var(--white); }
+    .nav-btn-outline:hover {
+      //  background: var(--gold);
+      background-color: #735377;
+
+       color: var(--white); }
 
     @media (max-width: 768px) {
       .nav-links { display: none; }

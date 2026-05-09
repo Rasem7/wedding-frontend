@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface LoginDto {
-  username: string;
+  email: string;
   password: string;
   rememberMe: boolean;
 }

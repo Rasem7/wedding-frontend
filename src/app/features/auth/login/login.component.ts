@@ -21,8 +21,8 @@ import { ToastService } from '../../../shared/components/toast/toast.service';
         <form [formGroup]="form" (ngSubmit)="submit()">
           <div class="form-group">
             <label>اسم المستخدم</label>
-            <input type="text" formControlName="username" placeholder="admin">
-            @if (form.get('username')?.invalid && form.get('username')?.touched) {
+            <input type="text" formControlName="email" placeholder="admin">
+            @if (form.get('email')?.invalid && form.get('email')?.touched) {
               <span class="error">اسم المستخدم مطلوب</span>
             }
           </div>
@@ -140,7 +140,7 @@ export class LoginComponent {
   showPass = false;
 
   form = this.fb.group({
-    username:   ['', Validators.required],
+    email:   ['', Validators.required],
     password:   ['', Validators.required],
     rememberMe: [false],
   });
@@ -150,7 +150,7 @@ export class LoginComponent {
     this.loading = true;
 
     this.auth.login({
-      username: this.form.value.username!,
+      email: this.form.value.email!,
       password: this.form.value.password!,
       rememberMe: this.form.value.rememberMe ?? false,
     }).subscribe({
@@ -159,6 +159,7 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
+        console.log(err)
         this.toast.error(err.status === 401 ? 'بيانات خاطئة، حاول تاني' : 'حصل خطأ، حاول بعدين');
         this.loading = false;
       }
